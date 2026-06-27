@@ -117,9 +117,9 @@ spark_project/
 │
 └── manage.py
 
-## 🔒 Managing Roles (RBAC)
-
 ```
+
+## 🔒 Managing Roles (RBAC)
 
 To grant a staff member the ability to review applications without giving them full Superuser control:
 
