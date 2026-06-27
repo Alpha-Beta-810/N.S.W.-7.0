@@ -119,6 +119,8 @@ spark_project/
 
 ## 🔒 Managing Roles (RBAC)
 
+```
+
 To grant a staff member the ability to review applications without giving them full Superuser control:
 
 1. Log in to the default Django admin (`/admin/`).
@@ -136,6 +138,5 @@ distribute, sublicense, or sell copies of this software.
 
 Unauthorized duplication or submission of this work for academic 
 or professional credit is strictly prohibited.
-```
 
 ```
