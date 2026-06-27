@@ -91,7 +91,6 @@ python manage.py runserver
 Visit `http://127.0.0.1:8000/` in your browser to view the site.
 
 ```
-
 ## 📂 Key Project Structure
 
 ```text
@@ -120,8 +119,6 @@ spark_project/
 
 ## 🔒 Managing Roles (RBAC)
 
-```text
-
 To grant a staff member the ability to review applications without giving them full Superuser control:
 
 1. Log in to the default Django admin (`/admin/`).
@@ -133,12 +130,12 @@ To grant a staff member the ability to review applications without giving them f
 Copyright (c) 2026 Devarakonda Saratchandra Mouli. All rights reserved.
 
 ```text
-
 This code and its associated documentation are private property. 
 No permission is granted for anyone to copy, modify, merge, publish, 
 distribute, sublicense, or sell copies of this software. 
 
 Unauthorized duplication or submission of this work for academic 
 or professional credit is strictly prohibited.
+```
 
 ```
