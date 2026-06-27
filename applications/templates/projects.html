@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h3 style="color:#003366;font-weight:700;">List of Projects</h3>
+<hr>
+<p class="text-muted" style="font-style:italic;">
+    Given below is a partial list indicative of students projects. Scientists in CSIR-4PI should be
+    directly contacted to find out more about their research programs and problems suitable for student projects.
+</p>
+
+<!-- Search -->
+<div class="input-group input-group-sm mb-3" style="max-width:400px;">
+    <span class="input-group-text"><i class="bi bi-search"></i></span>
+    <input type="text" id="projectSearch" class="form-control" placeholder="Search projects or scientists…">
+</div>
+
+{% for group in project_groups %}
+<div class="section-card project-group">
+    <div class="section-title d-flex justify-content-between">
+        <span>{{ group.area }}</span>
+        <span class="badge bg-warning text-dark ms-2">{{ group.projects|length }}</span>
+    </div>
+    <div class="section-body p-0">
+        <table class="table table-sm table-hover mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th style="width:2rem">#</th>
+                    <th>Tentative Title / Area of the Project</th>
+                    <th style="width:200px;">Guide E-mail ID</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in group.projects %}
+                <tr class="project-row">
+                    <td class="text-muted">{{ forloop.counter }}</td>
+                    <td class="project-title">{{ p.title }}</td>
+                    <td><a href="mailto:{{ p.email }}" class="project-email">{{ p.email }}</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endfor %}
+
+<div id="noResults" class="text-center text-muted py-4" style="display:none;">
+    No projects match your search.
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.getElementById('projectSearch').addEventListener('input', function () {
+    const q = this.value.toLowerCase();
+    let any = false;
+    document.querySelectorAll('.project-group').forEach(g => {
+      let match = false;
+      g.querySelectorAll('.project-row').forEach(r => {
+        const hit = !q
+          || r.querySelector('.project-title').textContent.toLowerCase().includes(q)
+          || r.querySelector('.project-email').textContent.toLowerCase().includes(q)
+          || g.querySelector('.section-title').textContent.toLowerCase().includes(q);
+        r.style.display = hit ? '' : 'none';
+        if (hit) match = true;
+      });
+      g.style.display = match ? '' : 'none';
+      if (match) any = true;
+    });
+    document.getElementById('noResults').style.display = any ? 'none' : '';
+  });
+</script>
+{% endblock %}

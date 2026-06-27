@@ -1,0 +1,10 @@
+<tr>
+  <td class="text-muted fw-semibold ps-3" style="width:40%;white-space:nowrap;">{{ label }}</td>
+  <td class="pe-3">
+    {% if link and value %}
+      <a href="{{ link }}{{ value }}">{% if prefix %}{{ prefix }} {% endif %}{{ value }}{% if suffix %} {{ suffix }}{% endif %}{% if suffix2 %}, {{ suffix2 }}{% endif %}</a>
+    {% else %}
+      {% if prefix %}{{ prefix }} {% endif %}{{ value|default:"—" }}{% if value and suffix %} {{ suffix }}{% endif %}{% if value and suffix2 %}, {{ suffix2 }}{% endif %}
+    {% endif %}
+  </td>
+</tr>

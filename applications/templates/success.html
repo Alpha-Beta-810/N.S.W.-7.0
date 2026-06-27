@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="text-center py-4">
+  <i class="bi bi-check-circle-fill text-success" style="font-size:3.5rem;"></i>
+  <h3 class="fw-bold mt-3" style="color:#003366;">Application Submitted Successfully!</h3>
+  <p class="text-muted">Thank you for applying to SPARK. Your application has been received and will be reviewed by the expert committee.</p>
+
+  <div class="section-card mt-4 text-start" style="max-width:520px;margin:0 auto;">
+    <div class="section-title">What happens next?</div>
+    <div class="section-body">
+      <ul class="mb-0 small">
+        <li class="mb-2">Applications are reviewed at <strong>regular intervals</strong> by the expert committee.</li>
+        <li class="mb-2">Selected candidates will be <strong>intimated by e-mail</strong>.</li>
+        <li class="mb-2">You may be called for a discussion prior to final selection.</li>
+        <li>Ensure your application was submitted <strong>at least 4 weeks</strong> before your intended start date.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="d-flex gap-2 justify-content-center mt-4 flex-wrap">
+    <a href="/" class="btn btn-warning fw-semibold px-4">Back to Home</a>
+    <a href="/guidelines/" class="btn btn-outline-secondary px-4">Read Guidelines</a>
+    <a href="/forms/" class="btn btn-outline-secondary px-4">Download Forms</a>
+  </div>
+</div>
+
+{% endblock %}

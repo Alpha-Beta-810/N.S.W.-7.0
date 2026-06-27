@@ -1,0 +1,456 @@
+{% extends "portal/base_portal.html" %}
+{% block title %}Dashboard — SPARK Admin Portal{% endblock %}
+{% block page_title %}Applications Dashboard{% endblock %}
+
+{% block content %}
+
+<style>
+  /* Adds a smooth lift and shadow effect when hovering over the clickable cards */
+  .stat-card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    height: 100%;
+  }
+  .stat-card-link .stat-card {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  }
+  .stat-card-link:hover .stat-card {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+    cursor: pointer;
+  }
+</style>
+
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-3 col-xl-2">
+    <a href="?tab=all" class="stat-card-link">
+      <div class="stat-card">
+        <div class="num" style="color:#003366;">{{ stats.total }}</div>
+        <div class="lbl">Total</div>
+      </div>
+    </a>
+  </div>
+  <div class="col-6 col-md-3 col-xl-2">
+    <a href="?tab=pending" class="stat-card-link">
+      <div class="stat-card">
+        <div class="num" style="color:#856404;">{{ stats.pending }}</div>
+        <div class="lbl">Pending</div>
+      </div>
+    </a>
+  </div>
+  <div class="col-6 col-md-3 col-xl-2">
+    <a href="?tab=accepted" class="stat-card-link">
+      <div class="stat-card">
+        <div class="num" style="color:#0a3622;">{{ stats.accepted }}</div>
+        <div class="lbl">Accepted</div>
+      </div>
+    </a>
+  </div>
+  <div class="col-6 col-md-3 col-xl-2">
+    <a href="?tab=rejected" class="stat-card-link">
+      <div class="stat-card">
+        <div class="num" style="color:#58151c;">{{ stats.rejected }}</div>
+        <div class="lbl">Rejected</div>
+      </div>
+    </a>
+  </div>
+  <div class="col-6 col-md-3 col-xl-2">
+    <div class="stat-card">
+      <div class="num" style="color:#0d6efd;">{{ stats.recent }}</div>
+      <div class="lbl">Last 7 Days</div>
+    </div>
+  </div>
+</div>
+
+<div class="bg-white rounded-top border-bottom mb-0">
+  <ul class="nav portal-tabs px-3 pt-1" style="gap:4px;">
+    {% for tab_id, tab_label in tab_items %}
+    <li class="nav-item">
+      <a class="nav-link {% if active_tab == tab_id %}active{% endif %}"
+         href="?tab={{ tab_id }}">
+        {{ tab_label }}
+        {% if tab_id == 'pending'  %}<span class="badge rounded-pill {% if active_tab == 'pending' %}bg-warning text-dark{% else %}bg-secondary{% endif %} ms-1">{{ stats.pending }}</span>{% endif %}
+        {% if tab_id == 'accepted' %}<span class="badge rounded-pill {% if active_tab == 'accepted' %}bg-success{% else %}bg-secondary{% endif %} ms-1">{{ stats.accepted }}</span>{% endif %}
+        {% if tab_id == 'rejected' %}<span class="badge rounded-pill {% if active_tab == 'rejected' %}bg-danger{% else %}bg-secondary{% endif %} ms-1">{{ stats.rejected }}</span>{% endif %}
+      </a>
+    </li>
+    {% endfor %}
+  </ul>
+</div>
+
+{% if active_tab != 'projects' %}
+  <!-- ───────────────────────────────────────────────────────────── -->
+  <!-- APPLICATION TABLE & FILTERS (Hidden on Projects Tab)          -->
+  <!-- ───────────────────────────────────────────────────────────── -->
+  <div class="bg-white border-bottom px-3 py-2 d-flex flex-wrap gap-2 align-items-center">
+    <form method="GET" class="d-flex flex-wrap gap-2 align-items-center flex-grow-1" id="filterForm">
+      <input type="hidden" name="tab" value="{{ active_tab }}">
+      <input type="text" name="q" class="form-control form-control-sm" style="max-width:220px;"
+             placeholder="Name, email, institute…" value="{{ q }}">
+      <select name="scheme" class="form-select form-select-sm" style="max-width:160px;">
+        <option value="">All Schemes</option>
+        <option value="Internship"     {% if scheme == 'Internship' %}selected{% endif %}>Internship</option>
+        <option value="Project/Thesis" {% if scheme == 'Project/Thesis' %}selected{% endif %}>Project/Thesis</option>
+      </select>
+      <select name="area" class="form-select form-select-sm" style="max-width:220px;">
+        <option value="">All Areas</option>
+        {% for a in areas %}
+        <option value="{{ a }}" {% if area == a %}selected{% endif %}>{{ a }}</option>
+        {% endfor %}
+      </select>
+      <select name="month" class="form-select" style="max-width: 150px;">
+        <option value="">All Months</option>
+        <option value="1" {% if month == '1' %}selected{% endif %}>January</option>
+        <option value="2" {% if month == '2' %}selected{% endif %}>February</option>
+        <option value="3" {% if month == '3' %}selected{% endif %}>March</option>
+        <option value="4" {% if month == '4' %}selected{% endif %}>April</option>
+        <option value="5" {% if month == '5' %}selected{% endif %}>May</option>
+        <option value="6" {% if month == '6' %}selected{% endif %}>June</option>
+        <option value="7" {% if month == '7' %}selected{% endif %}>July</option>
+        <option value="8" {% if month == '8' %}selected{% endif %}>August</option>
+        <option value="9" {% if month == '9' %}selected{% endif %}>September</option>
+        <option value="10" {% if month == '10' %}selected{% endif %}>October</option>
+        <option value="11" {% if month == '11' %}selected{% endif %}>November</option>
+        <option value="12" {% if month == '12' %}selected{% endif %}>December</option>
+      </select>
+
+      <button class="btn btn-sm btn-dark">Filter</button>
+      <a href="?tab={{ active_tab }}" class="btn btn-sm btn-outline-secondary">Clear</a>
+    </form>
+      
+    <div class="ms-auto d-flex gap-2">
+    <a href="/portal/export/pdf/?tab={{ active_tab }}&q={{ q }}&scheme={{ scheme }}&area={{ area }}&month={{ month }}" 
+       class="btn btn-sm btn-outline-danger shadow-sm">
+      <i class="bi bi-file-earmark-pdf me-1"></i>Export PDF
+    </a>
+    
+    <a href="/portal/export/csv/?tab={{ active_tab }}&q={{ q }}&scheme={{ scheme }}&area={{ area }}" 
+       class="btn btn-sm btn-outline-success shadow-sm">
+      <i class="bi bi-file-earmark-spreadsheet me-1"></i>Export CSV
+    </a>
+  </div>
+
+  <div class="bg-white rounded-bottom shadow-sm">
+    <div class="table-responsive" style="min-height: 225px;">
+      <table class="table table-hover portal-table mb-0">
+        <thead>
+          <tr>
+            <th style="width:2rem">#</th>
+            <th>Name</th>
+            <th>Contact</th>
+            <th>Institute</th>
+            <th>Course</th>
+            <th>Scheme</th>
+            <th>Area of Interest</th>
+            <th>CGPA</th>
+            <th>Guide</th>
+            <th>Applied</th>
+            <th>Status</th>
+            <th>Mode</th>
+            <th style="width:90px;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for app in page_obj %}
+          <tr onclick="window.location='/portal/application/{{ app.id }}/'">
+            <td class="text-muted">{{ app.id }}</td>
+            <td>
+              <strong>{{ app.title }} {{ app.full_name }}</strong><br>
+              <small class="text-muted">{{ app.city }}, {{ app.state }}</small>
+            </td>
+            <td>
+              <a href="mailto:{{ app.email }}" onclick="event.stopPropagation()">{{ app.email }}</a><br>
+              <small>{{ app.mobile }}</small>
+            </td>
+            <td>{{ app.institute_name }}<br><small class="text-muted">{{ app.department }}</small></td>
+            <td>{{ app.course_name }}<br><small class="text-muted">{{ app.course_duration }} yr</small></td>
+            <td>
+              {% if app.scheme == 'Internship' %}<span class="badge bg-primary">Internship</span>
+              {% else %}<span class="badge bg-secondary">Project/Thesis</span>{% endif %}
+            </td>
+            <td><small>{{ app.area_of_interest }}</small></td>
+            <td class="fw-bold">{{ app.cgpa }}</td>
+            
+            <td onclick="event.stopPropagation()">
+            <form method="POST">
+              {% csrf_token %}
+              <input type="hidden" name="action" value="assign_guide">
+              <input type="hidden" name="app_id" value="{{ app.id }}">
+              
+              <select name="guide" class="form-select form-select-sm shadow-sm" onchange="this.form.submit()" style="min-width: 140px;">
+                <option value="">Assign...</option>
+                {% for guide in guides %}
+                  <option value="{{ guide }}" {% if app.csir_guide_name == guide %}selected{% endif %}>
+                    {{ guide }}
+                  </option>
+                {% endfor %}
+              </select>
+            </form>
+          </td>
+
+            <td><small>{{ app.created_at|date:"d M Y" }}</small></td>
+            <td onclick="event.stopPropagation()">
+              <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="update_status">
+                <input type="hidden" name="app_id" value="{{ app.id }}">
+                
+                <select name="status" class="form-select form-select-sm shadow-sm border-0 fw-bold 
+                  {% if app.status == 'Pending' %}text-warning bg-warning bg-opacity-10
+                  {% elif app.status == 'Accepted' %}text-success bg-success bg-opacity-10
+                  {% else %}text-danger bg-danger bg-opacity-10{% endif %}" 
+                  onchange="this.form.submit()" style="min-width: 110px;">
+                  
+                  <option value="Pending" class="text-dark" {% if app.status == 'Pending' %}selected{% endif %}>Pending</option>
+                  <option value="Accepted" class="text-dark" {% if app.status == 'Accepted' %}selected{% endif %}>Accepted</option>
+                  <option value="Rejected" class="text-dark" {% if app.status == 'Rejected' %}selected{% endif %}>Rejected</option>
+                </select>
+              </form>
+            </td>
+            
+            <td onclick="event.stopPropagation()">
+              <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="update_attendance_mode">
+                <input type="hidden" name="app_id" value="{{ app.id }}">
+                
+                <select name="attendance_mode" class="form-select form-select-sm shadow-sm border-0 fw-bold 
+                  {% if app.attendance_mode == 'Online' %}text-primary bg-primary bg-opacity-10
+                  {% elif app.attendance_mode == 'Offline' %}text-primary bg-none bg-opacity-10
+                  {% else %}text-muted shadow-sm border-0 fw-bold bg-dark bg-opacity-10{% endif %}" 
+                  onchange="this.form.submit()" style="min-width: 105px;">
+                  
+                  <option value="" class="text-dark">Not Set</option>
+                  <option value="Online" class="text-dark" {% if app.attendance_mode == 'Online' %}selected{% endif %}>Online</option>
+                  <option value="Offline" class="text-dark" {% if app.attendance_mode == 'Offline' %}selected{% endif %}>Offline</option>
+                </select>
+              </form>
+            </td>
+            
+            <td onclick="event.stopPropagation()">
+              <a href="/portal/application/{{ app.id }}/" class="btn btn-sm btn-outline-primary py-0 px-2">
+                <i class="bi bi-eye"></i>
+              </a>
+              <div class="dropdown d-inline-block">
+                <button class="btn btn-sm btn-outline-secondary py-0 px-2 dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" data-bs-boundary="window"></button>
+                <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                  <li>
+                    <form method="POST" action="/portal/application/{{ app.id }}/action/">
+                      {% csrf_token %}
+                      <input type="hidden" name="status" value="Accepted">
+                      <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                      <button class="dropdown-item text-success fw-semibold">
+                        <i class="bi bi-check-lg me-2"></i>Accept
+                      </button>
+                    </form>
+                  </li>
+                  <li>
+                    <form method="POST" action="/portal/application/{{ app.id }}/action/">
+                      {% csrf_token %}
+                      <input type="hidden" name="status" value="Rejected">
+                      <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                      <button class="dropdown-item text-danger fw-semibold">
+                        <i class="bi bi-x-lg me-2"></i>Reject
+                      </button>
+                    </form>
+                  </li>
+                  <li><hr class="dropdown-divider"></li>
+                  <li>
+                    <a class="dropdown-item" href="/portal/application/{{ app.id }}/export-pdf/">
+                      <i class="bi bi-file-earmark-pdf me-2 text-danger"></i>Download PDF
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="13" class="text-center text-muted py-5">
+              <i class="bi bi-inbox d-block fs-1 mb-2"></i>
+              No applications {% if q %}matching "{{ q }}"{% else %}in this category{% endif %}.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    {% if page_obj.paginator.num_pages > 1 %}
+    <div class="d-flex justify-content-between align-items-center px-3 py-2 border-top small text-muted">
+      <span>
+        Showing {{ page_obj.start_index }}–{{ page_obj.end_index }}
+        of {{ page_obj.paginator.count }} applications
+      </span>
+      <nav>
+        <ul class="pagination pagination-sm mb-0">
+          {% if page_obj.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?tab={{ active_tab }}&q={{ q }}&scheme={{ scheme }}&area={{ area }}&page={{ page_obj.previous_page_number }}">
+              <i class="bi bi-chevron-left"></i>
+            </a>
+          </li>
+          {% endif %}
+          {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+            <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+            {% elif num >= page_obj.number|add:"-2" and num <= page_obj.number|add:"2" %}
+            <li class="page-item">
+              <a class="page-link" href="?tab={{ active_tab }}&q={{ q }}&scheme={{ scheme }}&area={{ area }}&page={{ num }}">{{ num }}</a>
+            </li>
+            {% endif %}
+          {% endfor %}
+          {% if page_obj.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?tab={{ active_tab }}&q={{ q }}&scheme={{ scheme }}&area={{ area }}&page={{ page_obj.next_page_number }}">
+              <i class="bi bi-chevron-right"></i>
+            </a>
+          </li>
+          {% endif %}
+        </ul>
+      </nav>
+    </div>
+    {% endif %}
+  </div>
+
+{% else %}
+  <!-- ───────────────────────────────────────────────────────────── -->
+  <!-- PROJECTS MANAGEMENT TAB (Only shows when active_tab == 'projects') -->
+  <!-- ───────────────────────────────────────────────────────────── -->
+  <div class="d-flex justify-content-between align-items-center mb-3 mt-4 px-3">
+    <h5 style="color:#003366; margin:0; font-weight: 700;">Manage Projects</h5>
+    {% if user.is_superuser %}
+    <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#addProjectModal">
+      <i class="bi bi-plus-lg me-1"></i> Add Project
+    </button>
+    {% endif %}
+  </div>
+
+  <div class="bg-white rounded shadow-sm border">
+    <div class="table-responsive">
+      <table class="table table-hover portal-table mb-0">
+        <thead>
+          <tr>
+            <th>Area</th>
+            <th>Project Title</th>
+            <th>Guide Email</th>
+            {% if user.is_superuser %}<th class="text-end" style="width: 150px;">Actions</th>{% endif %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for project in projects %}
+          <tr>
+            <td><span class="badge bg-secondary">{{ project.area }}</span></td>
+            <td class="fw-bold">{{ project.title }}</td>
+            <td><a href="mailto:{{ project.email }}">{{ project.email }}</a></td>
+            
+            {% if user.is_superuser %}
+            <td class="text-end">
+              <!-- Edit Button triggers modal -->
+              <button class="btn btn-sm btn-outline-primary py-0" data-bs-toggle="modal" data-bs-target="#editProjectModal{{ project.id }}">Edit</button>
+              
+              <!-- Delete Form -->
+              <form method="POST" class="d-inline" onsubmit="return confirm('Delete this project?');">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="delete_project">
+                <input type="hidden" name="project_id" value="{{ project.id }}">
+                <button type="submit" class="btn btn-sm btn-outline-danger py-0">Delete</button>
+              </form>
+            </td>
+            {% endif %}
+          </tr>
+
+          <!-- Edit Project Modal -->
+          {% if user.is_superuser %}
+          <div class="modal fade" id="editProjectModal{{ project.id }}" tabindex="-1">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <form method="POST">
+                  {% csrf_token %}
+                  <input type="hidden" name="action" value="edit_project">
+                  <input type="hidden" name="project_id" value="{{ project.id }}">
+                  <div class="modal-header bg-light">
+                    <h5 class="modal-title fs-6 fw-bold">Edit Project</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                  </div>
+                  <div class="modal-body text-start">
+                    <div class="mb-3">
+                      <label class="form-label small fw-bold text-muted">Area</label>
+                      <input type="text" name="area" class="form-control" value="{{ project.area }}" required>
+                    </div>
+                    <div class="mb-3">
+                      <label class="form-label small fw-bold text-muted">Project Title</label>
+                      <input type="text" name="title" class="form-control" value="{{ project.title }}" required>
+                    </div>
+                    <div class="mb-3">
+                      <label class="form-label small fw-bold text-muted">Guide Email(s)</label>
+                      <input type="email" name="email" class="form-control" value="{{ project.email }}" multiple required>
+                      <div class="form-text" style="font-size: 0.75rem;">Separate multiple emails with a comma.</div>
+                    </div>
+                  </div>
+                  <div class="modal-footer p-2">
+                    <button type="submit" class="btn btn-primary w-100">Save Changes</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+          {% endif %}
+          
+          {% empty %}
+          <tr><td colspan="4" class="text-center text-muted py-5"><i class="bi bi-folder-x d-block fs-2 mb-2"></i>No projects added yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Add Project Modal -->
+  {% if user.is_superuser %}
+  <div class="modal fade" id="addProjectModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form method="POST">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="add_project">
+          <div class="modal-header bg-light">
+            <h5 class="modal-title fs-6 fw-bold">Add New Project</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body text-start">
+            <div class="mb-3">
+              <label class="form-label small fw-bold text-muted">Area</label>
+              <input type="text" name="area" class="form-control" placeholder="e.g. Cyber Security" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label small fw-bold text-muted">Project Title</label>
+              <input type="text" name="title" class="form-control" placeholder="Project Name" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label small fw-bold text-muted">Guide Email(s)</label>
+              <input type="email" name="email" class="form-control" placeholder="guide1@example.com, guide2@example.com" multiple required>
+            </div>
+          </div>
+          <div class="modal-footer p-2">
+            <button type="submit" class="btn btn-success w-100">Add Project</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+{% endif %}
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Pass tab items from view via template
+const tab_items = [
+  ['pending', 'Pending'], ['accepted', 'Accepted'],
+  ['rejected', 'Rejected'], ['all', 'All'],
+  ['projects', 'Projects']
+];
+</script>
+{% endblock %}

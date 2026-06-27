@@ -1,0 +1,827 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="alert alert-warning py-2 mb-3" style="font-size:.88rem;">
+  <strong>Note:</strong> Students are highly encouraged to interact with CSIR-4PI Scientists
+  and identify a guide/co-guide before formally submitting this application.
+</div>
+
+<h3 style="color:#003366;font-weight:700;">Application Form</h3>
+<p class="text-muted small mb-3">Fields marked <span class="text-danger">*</span> are required.</p>
+
+{% if form.errors %}
+<div class="alert alert-danger py-2 mb-3">
+  <strong>Please fix the highlighted errors below and resubmit.</strong>
+</div>
+{% endif %}
+
+<form method="POST" action="/apply/" enctype="multipart/form-data" novalidate id="applyForm">
+  {% csrf_token %} <div class="section-card mb-4">
+    <div class="section-title"><i class="bi bi-person-fill me-2"></i>Personal Details</div>
+    <div class="section-body">
+      <div class="row g-3">
+
+        <div class="col-md-8">
+          <label class="form-label fw-semibold">Applicant Name <span class="text-danger">*</span></label>
+          <div class="input-group {% if form.full_name.errors %}has-validation{% endif %}">
+            {{ form.title }}
+            <input type="text" name="full_name" id="id_full_name"
+              value="{{ form.full_name.value|default:'' }}"
+              class="form-control {% if form.full_name.errors %}is-invalid{% elif form.full_name.value %}is-valid{% endif %}"
+              placeholder="Full name">
+            {% if form.full_name.errors %}
+            <div class="invalid-feedback d-block">{{ form.full_name.errors.0 }}</div>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label fw-semibold">Date of Birth <span class="text-danger">*</span></label>
+          <input type="date" name="dob" id="id_dob"
+            value="{{ form.dob.value|default:'' }}"
+            class="form-control {% if form.dob.errors %}is-invalid{% elif form.dob.value %}is-valid{% endif %}">
+          {% if form.dob.errors %}<div class="invalid-feedback d-block">{{ form.dob.errors.0 }}</div>{% endif %}
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label fw-semibold">Gender <span class="text-danger">*</span></label>
+          <select name="gender" id="id_gender"
+            class="form-select {% if form.gender.errors %}is-invalid{% elif form.gender.value %}is-valid{% endif %}">
+            <option value="">-- Select --</option>
+            {% for val, label in form.fields.gender.widget.choices %}
+              {% if val %}<option value="{{ val }}" {% if form.gender.value == val %}selected{% endif %}>{{ label }}</option>{% endif %}
+            {% endfor %}
+          </select>
+          {% if form.gender.errors %}<div class="invalid-feedback d-block">{{ form.gender.errors.0 }}</div>{% endif %}
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label fw-semibold">Nationality <span class="text-danger">*</span></label>
+          <input type="text" name="nationality" id="id_nationality"
+            value="{{ form.nationality.value|default:'Indian' }}"
+            class="form-control {% if form.nationality.errors %}is-invalid{% elif form.nationality.value %}is-valid{% endif %}">
+          {% if form.nationality.errors %}<div class="invalid-feedback d-block">{{ form.nationality.errors.0 }}</div>{% endif %}
+        </div>
+
+        <div class="col-12">
+          <label class="form-label fw-semibold">Postal Address <span class="text-danger">*</span></label>
+          <textarea name="address" id="id_address" rows="3"
+            class="form-control {% if form.address.errors %}is-invalid{% elif form.address.value %}is-valid{% endif %}">{{ form.address.value|default:'' }}</textarea>
+          {% if form.address.errors %}<div class="invalid-feedback d-block">{{ form.address.errors.0 }}</div>{% endif %}
+        </div>
+
+        <div class="col-md-5">
+          <label class="form-label fw-semibold">City <span class="text-danger">*</span></label>
+          <input type="text" name="city" id="id_city"
+            value="{{ form.city.value|default:'' }}"
+            class="form-control {% if form.city.errors %}is-invalid{% elif form.city.value %}is-valid{% endif %}">
+          {% if form.city.errors %}<div class="invalid-feedback d-block">{{ form.city.errors.0 }}</div>{% endif %}
+        </div>
+        
+        <div class="col-md-4">
+          <label class="form-label fw-semibold">State <span class="text-danger">*</span></label>
+          <input type="text" name="state" id="id_state"
+            value="{{ form.state.value|default:'' }}"
+            class="form-control {% if form.state.errors %}is-invalid{% elif form.state.value %}is-valid{% endif %}">
+          {% if form.state.errors %}<div class="invalid-feedback d-block">{{ form.state.errors.0 }}</div>{% endif %}
+        </div>
+        
+        <div class="col-md-3">
+          <label class="form-label fw-semibold">Pincode <span class="text-danger">*</span></label>
+          <input type="text" name="pincode" id="id_pincode" maxlength="6" inputmode="numeric"
+            value="{{ form.pincode.value|default:'' }}"
+            class="form-control {% if form.pincode.errors %}is-invalid{% elif form.pincode.value %}is-valid{% endif %}"
+            placeholder="6 digits">
+          {% if form.pincode.errors %}
+            <div class="invalid-feedback d-block">{{ form.pincode.errors.0 }}</div>
+          {% else %}
+            <div class="invalid-feedback" id="pincode_live_err">Must be exactly 6 digits.</div>
+          {% endif %}
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">Email ID <span class="text-danger">*</span></label>
+          <input type="email" name="email" id="id_email"
+            value="{{ form.email.value|default:'' }}"
+            class="form-control {% if form.email.errors %}is-invalid{% elif form.email.value %}is-valid{% endif %}"
+            placeholder="you@example.com">
+          {% if form.email.errors %}
+            <div class="invalid-feedback d-block">{{ form.email.errors.0 }}</div>
+          {% else %}
+            <div class="invalid-feedback" id="email_live_err">Enter a valid email address.</div>
+          {% endif %}
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label fw-semibold">Phone No. <span class="text-danger">*</span></label>
+          <input type="text" name="phone" id="id_phone" maxlength="15"
+            value="{{ form.phone.value|default:'' }}"
+            class="form-control {% if form.phone.errors %}is-invalid{% elif form.phone.value %}is-valid{% endif %}"
+            placeholder="e.g. 08025XXXXXX">
+          {% if form.phone.errors %}
+            <div class="invalid-feedback d-block">{{ form.phone.errors.0 }}</div>
+          {% else %}
+            <div class="form-text">Landline / office number</div>
+          {% endif %}
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label fw-semibold">Mobile No. <span class="text-danger">*</span></label>
+          <input type="text" name="mobile" id="id_mobile" maxlength="10" inputmode="numeric"
+            value="{{ form.mobile.value|default:'' }}"
+            class="form-control {% if form.mobile.errors %}is-invalid{% elif form.mobile.value %}is-valid{% endif %}"
+            placeholder="10 digits">
+          {% if form.mobile.errors %}
+            <div class="invalid-feedback d-block">{{ form.mobile.errors.0 }}</div>
+          {% else %}
+            <div class="invalid-feedback" id="mobile_live_err">Must be exactly 10 digits.</div>
+          {% endif %}
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+  <div class="section-card mb-4">
+    <div class="section-title"><i class="bi bi-mortarboard-fill me-2"></i>Current Course Details</div>
+    <div class="section-body">
+      <div class="row g-3">
+
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">Name of Institute <span class="text-danger">*</span></label>
+          <input type="text" name="institute_name"
+            value="{{ form.institute_name.value|default:'' }}"
+            class="form-control {% if form.institute_name.errors %}is-invalid{% elif form.institute_name.value %}is-valid{% endif %}">
+          {% if form.institute_name.errors %}<div class="invalid-feedback d-block">{{ form.institute_name.errors.0 }}</div>{% endif %}
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">Institute Category <span class="text-danger">*</span></label>
+          <select name="institute_category"
+            class="form-select {% if form.institute_category.errors %}is-invalid{% elif form.institute_category.value %}is-valid{% endif %}">
+            {% for val, label in form.fields.institute_category.widget.choices %}
+              <option value="{{ val }}" {% if form.institute_category.value == val %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+          {% if form.institute_category.errors %}<div class="invalid-feedback d-block">{{ form.institute_category.errors.0 }}</div>{% endif %}
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">Department <span class="text-danger">*</span></label>
+          <input type="text" name="department"
+            value="{{ form.department.value|default:'' }}"
+            class="form-control {% if form.department.errors %}is-invalid{% elif form.department.value %}is-valid{% endif %}">
+          {% if form.department.errors %}<div class="invalid-feedback d-block">{{ form.department.errors.0 }}</div>{% endif %}
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">Specialization <span class="text-danger">*</span></label>
+          <input type="text" name="specialization"
+            value="{{ form.specialization.value|default:'' }}"
+            class="form-control {% if form.specialization.errors %}is-invalid{% elif form.specialization.value %}is-valid{% endif %}">
+          {% if form.specialization.errors %}<div class="invalid-feedback d-block">{{ form.specialization.errors.0 }}</div>{% endif %}
+        </div>
+
+        <div class="col-md-5">
+          <label class="form-label fw-semibold">Name of the Course <span class="text-danger">*</span></label>
+          <select name="course_name" id="id_course_name"
+            class="form-select {% if form.course_name.errors %}is-invalid{% elif form.course_name.value %}is-valid{% endif %}">
+            {% for val, label in form.fields.course_name.widget.choices %}
+              <option value="{{ val }}" {% if form.course_name.value == val %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+          {% if form.course_name.errors %}<div class="invalid-feedback d-block">{{ form.course_name.errors.0 }}</div>{% endif %}
+        </div>
+
+        <div class="col-md-4" id="course_other_wrap" style="display:none">
+          <label class="form-label fw-semibold">Please specify</label>
+          <input type="text" name="course_other" id="id_course_other"
+            value="{{ form.course_other.value|default:'' }}"
+            class="form-control {% if form.course_other.errors %}is-invalid{% endif %}"
+            placeholder="Course name">
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label fw-semibold">Course Duration <span class="text-danger">*</span></label>
+          <select name="course_duration"
+            class="form-select {% if form.course_duration.errors %}is-invalid{% elif form.course_duration.value %}is-valid{% endif %}">
+            {% for val, label in form.fields.course_duration.widget.choices %}
+              <option value="{{ val }}" {% if form.course_duration.value == val %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+          {% if form.course_duration.errors %}<div class="invalid-feedback d-block">{{ form.course_duration.errors.0 }}</div>{% endif %}
+        </div>
+
+        <div class="col-12">
+          <label class="form-label fw-semibold">Postal Address of Institute <span class="text-danger">*</span></label>
+          <textarea name="institute_address" rows="3"
+            class="form-control {% if form.institute_address.errors %}is-invalid{% elif form.institute_address.value %}is-valid{% endif %}">{{ form.institute_address.value|default:'' }}</textarea>
+          {% if form.institute_address.errors %}<div class="invalid-feedback d-block">{{ form.institute_address.errors.0 }}</div>{% endif %}
+        </div>
+
+        <div class="col-md-5">
+          <label class="form-label fw-semibold">CGPA / Mark % <span class="text-danger">*</span></label>
+          <select name="score_type" id="id_score_type" class="form-select">
+            {% for val, label in form.fields.score_type.choices %}
+              <option value="{{ val }}" {% if form.score_type.value == val %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        
+        <div class="col-md-4">
+          <label class="form-label fw-semibold" id="cgpa_label">Aggregate <span class="text-danger">*</span></label>
+          <input type="number" name="cgpa" id="id_cgpa" step="0.01" min="0" max="10"
+            value="{{ form.cgpa.value|default:'' }}"
+            class="form-control {% if form.cgpa.errors %}is-invalid{% elif form.cgpa.value is not None %}is-valid{% endif %}">
+          <div class="form-text" id="cgpa_hint">0.00 – 10.00</div>
+          {% if form.cgpa.errors %}<div class="invalid-feedback d-block">{{ form.cgpa.errors.0 }}</div>{% endif %}
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+  <div class="section-card mb-4">
+    <div class="section-title"><i class="bi bi-book-fill me-2"></i>Previous Academic Details</div>
+    <div class="section-body">
+      <div class="row g-3">
+
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">10th / SSLC Percentage <span class="text-danger">*</span></label>
+          <input type="number" name="tenth_percentage" id="id_tenth" step="0.01" min="0" max="100"
+            value="{{ form.tenth_percentage.value|default:'' }}"
+            class="form-control {% if form.tenth_percentage.errors %}is-invalid{% elif form.tenth_percentage.value is not None %}is-valid{% endif %}">
+          {% if form.tenth_percentage.errors %}<div class="invalid-feedback d-block">{{ form.tenth_percentage.errors.0 }}</div>
+          {% else %}<div class="invalid-feedback" id="tenth_live_err">Must be between 0 and 100.</div>{% endif %}
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">12th / PUC Percentage <span class="text-danger">*</span></label>
+          <input type="number" name="twelfth_percentage" id="id_twelfth" step="0.01" min="0" max="100"
+            value="{{ form.twelfth_percentage.value|default:'' }}"
+            class="form-control {% if form.twelfth_percentage.errors %}is-invalid{% elif form.twelfth_percentage.value is not None %}is-valid{% endif %}">
+          {% if form.twelfth_percentage.errors %}<div class="invalid-feedback d-block">{{ form.twelfth_percentage.errors.0 }}</div>
+          {% else %}<div class="invalid-feedback" id="twelfth_live_err">Must be between 0 and 100.</div>{% endif %}
+        </div>
+
+        <div class="col-md-5">
+          <label class="form-label fw-semibold">Highest Degree <span class="text-danger">*</span></label>
+          <select name="highest_degree"
+            class="form-select {% if form.highest_degree.errors %}is-invalid{% elif form.highest_degree.value %}is-valid{% endif %}">
+            {% for val, label in form.fields.highest_degree.widget.choices %}
+              <option value="{{ val }}" {% if form.highest_degree.value == val %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+          {% if form.highest_degree.errors %}<div class="invalid-feedback d-block">{{ form.highest_degree.errors.0 }}</div>{% endif %}
+        </div>
+
+        <div class="col-md-7">
+          <label class="form-label fw-semibold">Specialization</label>
+          <input type="text" name="prev_specialization"
+            value="{{ form.prev_specialization.value|default:'' }}"
+            class="form-control {% if form.prev_specialization.errors %}is-invalid{% endif %}">
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">Institute Category</label>
+          <select name="prev_institute_category" class="form-select">
+            {% for val, label in form.fields.prev_institute_category.widget.choices %}
+              <option value="{{ val }}" {% if form.prev_institute_category.value == val %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">Name of Institute</label>
+          <input type="text" name="prev_institute"
+            value="{{ form.prev_institute.value|default:'' }}"
+            class="form-control {% if form.prev_institute.errors %}is-invalid{% endif %}">
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">Department</label>
+          <input type="text" name="prev_department"
+            value="{{ form.prev_department.value|default:'' }}"
+            class="form-control {% if form.prev_department.errors %}is-invalid{% endif %}">
+        </div>
+
+        <div class="col-12">
+          <label class="form-label fw-semibold">Postal Address of Institute</label>
+          <textarea name="prev_institute_address" rows="3"
+            class="form-control {% if form.prev_institute_address.errors %}is-invalid{% endif %}">{{ form.prev_institute_address.value|default:'' }}</textarea>
+        </div>
+
+        <div class="col-md-5">
+          <label class="form-label fw-semibold">Previous CGPA / Mark %</label>
+          <select name="prev_score_type" id="id_prev_score_type" class="form-select">
+            {% for val, label in form.fields.prev_score_type.choices %}
+              <option value="{{ val }}" {% if form.prev_score_type.value == val %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label fw-semibold" id="prev_cgpa_label">Aggregate</label>
+          <input type="number" name="prev_cgpa" id="id_prev_cgpa" step="0.01" min="0" max="10"
+            value="{{ form.prev_cgpa.value|default:'' }}"
+            class="form-control {% if form.prev_cgpa.errors %}is-invalid{% endif %}">
+          <div class="form-text" id="prev_cgpa_hint">0.00 – 10.00</div>
+          {% if form.prev_cgpa.errors %}<div class="invalid-feedback d-block">{{ form.prev_cgpa.errors.0 }}</div>{% endif %}
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+  <div class="section-card mb-4">
+    <div class="section-title"><i class="bi bi-clipboard2-data-fill me-2"></i>Project / Thesis Information</div>
+    <div class="section-body">
+
+      <div class="alert alert-info py-2 mb-3" style="font-size:.85rem;" id="duration_info_alert">
+        Select <strong>Project/Thesis</strong> for Final Semester Project requiring a signed report.
+        Maximum Internship duration is <strong>3 months</strong>.
+        <span id="degree_duration_note" class="ms-1 fw-semibold" style="display:none;"></span>
+      </div>
+
+      <div class="row g-3">
+
+        <div class="col-md-4">
+          <label class="form-label fw-semibold">Scheme <span class="text-danger">*</span></label>
+          <select name="scheme" id="id_scheme"
+            class="form-select {% if form.scheme.errors %}is-invalid{% elif form.scheme.value %}is-valid{% endif %}">
+            {% for val, label in form.fields.scheme.widget.choices %}
+              <option value="{{ val }}" {% if form.scheme.value == val %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+          {% if form.scheme.errors %}<div class="invalid-feedback d-block">{{ form.scheme.errors.0 }}</div>{% endif %}
+        </div>
+
+        <div class="col-md-3" id="wrap_from">
+          <label class="form-label fw-semibold" id="lbl_from">From <span class="text-danger">*</span></label>
+          <input type="date" name="internship_from" id="id_internship_from"
+            value="{{ form.internship_from.value|default:'' }}"
+            class="form-control {% if form.internship_from.errors %}is-invalid{% elif form.internship_from.value %}is-valid{% endif %}">
+          {% if form.internship_from.errors %}<div class="invalid-feedback d-block">{{ form.internship_from.errors.0 }}</div>{% endif %}
+        </div>
+
+        <div class="col-md-3" id="wrap_to">
+          <label class="form-label fw-semibold" id="lbl_to">To <span class="text-danger">*</span></label>
+          <input type="date" name="internship_to" id="id_internship_to"
+            value="{{ form.internship_to.value|default:'' }}"
+            class="form-control {% if form.internship_to.errors %}is-invalid{% elif form.internship_to.value %}is-valid{% endif %}">
+          {% if form.internship_to.errors %}<div class="invalid-feedback d-block">{{ form.internship_to.errors.0 }}</div>{% endif %}
+        </div>
+
+        <div class="col-md-2" id="wrap_duration">
+          <label class="form-label fw-semibold">Duration (Months)</label>
+          <input type="number" name="duration_months" id="id_duration_months" min="2" max="12"
+            value="{{ form.duration_months.value|default:'' }}"
+            class="form-control {% if form.duration_months.errors %}is-invalid{% endif %}"
+            placeholder="Months">
+          <div class="form-text" id="duration_hint">2–12 months</div>
+          {% if form.duration_months.errors %}<div class="invalid-feedback d-block">{{ form.duration_months.errors.0 }}</div>{% endif %}
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">Area of Interest <span class="text-danger">*</span></label>
+          <select name="area_of_interest" id="id_area_of_interest"
+            class="form-select {% if form.area_of_interest.errors %}is-invalid{% elif form.area_of_interest.value %}is-valid{% endif %}">
+            {% for val, label in form.fields.area_of_interest.widget.choices %}
+              <option value="{{ val }}" {% if form.area_of_interest.value == val %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+          {% if form.area_of_interest.errors %}<div class="invalid-feedback d-block">{{ form.area_of_interest.errors.0 }}</div>{% endif %}
+        </div>
+
+        <div class="col-md-6" id="area_other_wrap" style="display:none">
+          <label class="form-label fw-semibold">Please specify</label>
+          <input type="text" name="area_other" id="id_area_other"
+            value="{{ form.area_other.value|default:'' }}"
+            class="form-control {% if form.area_other.errors %}is-invalid{% endif %}">
+        </div>
+
+        <div class="col-12">
+          <label class="form-label fw-semibold">Statement of Purpose <span class="text-danger">*</span></label>
+          <textarea name="statement" rows="4"
+            class="form-control {% if form.statement.errors %}is-invalid{% elif form.statement.value %}is-valid{% endif %}">{{ form.statement.value|default:'' }}</textarea>
+          {% if form.statement.errors %}<div class="invalid-feedback d-block">{{ form.statement.errors.0 }}</div>{% endif %}
+        </div>
+
+        <div class="col-12">
+          <label class="form-label fw-semibold">Relevant Experience</label>
+          <textarea name="experience" rows="3"
+            class="form-control {% if form.experience.errors %}is-invalid{% endif %}">{{ form.experience.value|default:'' }}</textarea>
+        </div>
+
+        <div class="col-12">
+          <label class="form-label fw-semibold">Any Previous Research / Project Work</label>
+          <textarea name="project_interest" rows="3"
+            class="form-control {% if form.project_interest.errors %}is-invalid{% endif %}">{{ form.project_interest.value|default:'' }}</textarea>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+  <div class="section-card mb-4">
+    <div class="section-title"><i class="bi bi-person-badge-fill me-2"></i>Details of Guide / H.O.D. from your University / Institute</div>
+    <div class="section-body">
+      <div class="row g-3">
+
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">Name <span class="text-danger">*</span></label>
+          <input type="text" name="guide_name"
+            value="{{ form.guide_name.value|default:'' }}"
+            class="form-control {% if form.guide_name.errors %}is-invalid{% elif form.guide_name.value %}is-valid{% endif %}">
+          {% if form.guide_name.errors %}<div class="invalid-feedback d-block">{{ form.guide_name.errors.0 }}</div>{% endif %}
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">Designation <span class="text-danger">*</span></label>
+          <input type="text" name="guide_designation"
+            value="{{ form.guide_designation.value|default:'' }}"
+            class="form-control {% if form.guide_designation.errors %}is-invalid{% elif form.guide_designation.value %}is-valid{% endif %}">
+          {% if form.guide_designation.errors %}<div class="invalid-feedback d-block">{{ form.guide_designation.errors.0 }}</div>{% endif %}
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">Department <span class="text-danger">*</span></label>
+          <input type="text" name="guide_department"
+            value="{{ form.guide_department.value|default:'' }}"
+            class="form-control {% if form.guide_department.errors %}is-invalid{% elif form.guide_department.value %}is-valid{% endif %}">
+          {% if form.guide_department.errors %}<div class="invalid-feedback d-block">{{ form.guide_department.errors.0 }}</div>{% endif %}
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">Email ID <span class="text-danger">*</span></label>
+          <input type="email" name="guide_email" id="id_guide_email"
+            value="{{ form.guide_email.value|default:'' }}"
+            class="form-control {% if form.guide_email.errors %}is-invalid{% elif form.guide_email.value %}is-valid{% endif %}">
+          {% if form.guide_email.errors %}
+            <div class="invalid-feedback d-block">{{ form.guide_email.errors.0 }}</div>
+          {% else %}
+            <div class="invalid-feedback" id="guide_email_live_err">Enter a valid email address.</div>
+          {% endif %}
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">Phone / Mobile No. <span class="text-danger">*</span></label>
+          <input type="text" name="guide_phone"
+            value="{{ form.guide_phone.value|default:'' }}"
+            class="form-control {% if form.guide_phone.errors %}is-invalid{% elif form.guide_phone.value %}is-valid{% endif %}"
+            placeholder="e.g. 08025XXXXXX / 090357XXXXX">
+          {% if form.guide_phone.errors %}<div class="invalid-feedback d-block">{{ form.guide_phone.errors.0 }}</div>{% endif %}
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">Name of Guide from CSIR-4PI</label>
+          <select name="csir_guide_name" id="id_csir_guide_name"
+            class="form-select {% if form.csir_guide_name.errors %}is-invalid{% endif %}">
+            <option value="">-- Select Scientist --</option>
+            <option value="Aakash Singh" {% if form.csir_guide_name.value == "Aakash Singh" %}selected{% endif %}>Aakash Singh</option>
+            <option value="Ajinkya Ashok Jagtap" {% if form.csir_guide_name.value == "Ajinkya Ashok Jagtap" %}selected{% endif %}>Ajinkya Ashok Jagtap</option>
+            <option value="Ateendra Gaur" {% if form.csir_guide_name.value == "Ateendra Gaur" %}selected{% endif %}>Ateendra Gaur</option>
+            <option value="Basavala Bhanu Prasanth" {% if form.csir_guide_name.value == "Basavala Bhanu Prasanth" %}selected{% endif %}>Basavala Bhanu Prasanth</option>
+            <option value="Brindashree B V" {% if form.csir_guide_name.value == "Brindashree B V" %}selected{% endif %}>Brindashree B V</option>
+            <option value="Dr. Aditya Panda" {% if form.csir_guide_name.value == "Dr. Aditya Panda" %}selected{% endif %}>Dr. Aditya Panda</option>
+            <option value="Dr. Anil Earnest" {% if form.csir_guide_name.value == "Dr. Anil Earnest" %}selected{% endif %}>Dr. Anil Earnest</option>
+            <option value="Dr. Anil Kumar V" {% if form.csir_guide_name.value == "Dr. Anil Kumar V" %}selected{% endif %}>Dr. Anil Kumar V</option>
+            <option value="Dr. Ashapurna Marndi" {% if form.csir_guide_name.value == "Dr. Ashapurna Marndi" %}selected{% endif %}>Dr. Ashapurna Marndi</option>
+            <option value="Dr. Ashish" {% if form.csir_guide_name.value == "Dr. Ashish" %}selected{% endif %}>Dr. Ashish</option>
+            <option value="Dr. CP Lakshmikanthan" {% if form.csir_guide_name.value == "Dr. CP Lakshmikanthan" %}selected{% endif %}>Dr. CP Lakshmikanthan</option>
+            <option value="Dr. Dileep Kumar Shetty" {% if form.csir_guide_name.value == "Dr. Dileep Kumar Shetty" %}selected{% endif %}>Dr. Dileep Kumar Shetty</option>
+            <option value="Dr. E Rajalakshmi" {% if form.csir_guide_name.value == "Dr. E Rajalakshmi" %}selected{% endif %}>Dr. E Rajalakshmi</option>
+            <option value="Dr. G. Chiranjeevi Vivek" {% if form.csir_guide_name.value == "Dr. G. Chiranjeevi Vivek" %}selected{% endif %}>Dr. G. Chiranjeevi Vivek</option>
+            <option value="Dr. Gayathri R" {% if form.csir_guide_name.value == "Dr. Gayathri R" %}selected{% endif %}>Dr. Gayathri R</option>
+            <option value="Dr. Gopal Krishna Patra" {% if form.csir_guide_name.value == "Dr. Gopal Krishna Patra" %}selected{% endif %}>Dr. Gopal Krishna Patra</option>
+            <option value="Dr. Gyanendranath Mohapatra" {% if form.csir_guide_name.value == "Dr. Gyanendranath Mohapatra" %}selected{% endif %}>Dr. Gyanendranath Mohapatra</option>
+            <option value="Dr. Imtiyaz Ahmed Parvez" {% if form.csir_guide_name.value == "Dr. Imtiyaz Ahmed Parvez" %}selected{% endif %}>Dr. Imtiyaz Ahmed Parvez</option>
+            <option value="Dr. K C Gouda" {% if form.csir_guide_name.value == "Dr. K C Gouda" %}selected{% endif %}>Dr. K C Gouda</option>
+            <option value="Dr. K Rajendran" {% if form.csir_guide_name.value == "Dr. K Rajendran" %}selected{% endif %}>Dr. K Rajendran</option>
+            <option value="Dr. Kanike Raghavendra Prasad Babu" {% if form.csir_guide_name.value == "Dr. Kanike Raghavendra Prasad Babu" %}selected{% endif %}>Dr. Kanike Raghavendra Prasad Babu</option>
+            <option value="Dr. Kantha Rao Bhimala" {% if form.csir_guide_name.value == "Dr. Kantha Rao Bhimala" %}selected{% endif %}>Dr. Kantha Rao Bhimala</option>
+            <option value="Dr. Karnan A" {% if form.csir_guide_name.value == "Dr. Karnan A" %}selected{% endif %}>Dr. Karnan A</option>
+            <option value="Dr. Kuldeep Singh Yadav" {% if form.csir_guide_name.value == "Dr. Kuldeep Singh Yadav" %}selected{% endif %}>Dr. Kuldeep Singh Yadav</option>
+            <option value="Dr. Nagarathna R." {% if form.csir_guide_name.value == "Dr. Nagarathna R." %}selected{% endif %}>Dr. Nagarathna R.</option>
+            <option value="Dr. Neha" {% if form.csir_guide_name.value == "Dr. Neha" %}selected{% endif %}>Dr. Neha</option>
+            <option value="Dr. Pousali Mukherjee" {% if form.csir_guide_name.value == "Dr. Pousali Mukherjee" %}selected{% endif %}>Dr. Pousali Mukherjee</option>
+            <option value="Dr. Pranita Baro" {% if form.csir_guide_name.value == "Dr. Pranita Baro" %}selected{% endif %}>Dr. Pranita Baro</option>
+            <option value="Dr. Prasanna Konatham" {% if form.csir_guide_name.value == "Dr. Prasanna Konatham" %}selected{% endif %}>Dr. Prasanna Konatham</option>
+            <option value="Dr. Rakesh V" {% if form.csir_guide_name.value == "Dr. Rakesh V" %}selected{% endif %}>Dr. Rakesh V</option>
+            <option value="Dr. Sajani Surendran" {% if form.csir_guide_name.value == "Dr. Sajani Surendran" %}selected{% endif %}>Dr. Sajani Surendran</option>
+            <option value="Dr. Samiran Ghosh" {% if form.csir_guide_name.value == "Dr. Samiran Ghosh" %}selected{% endif %}>Dr. Samiran Ghosh</option>
+            <option value="Dr. Sangeetha S" {% if form.csir_guide_name.value == "Dr. Sangeetha S" %}selected{% endif %}>Dr. Sangeetha S</option>
+            <option value="Dr. Sithartha Muthu Vijayan" {% if form.csir_guide_name.value == "Dr. Sithartha Muthu Vijayan" %}selected{% endif %}>Dr. Sithartha Muthu Vijayan</option>
+            <option value="Dr. Suribabu Donupudi" {% if form.csir_guide_name.value == "Dr. Suribabu Donupudi" %}selected{% endif %}>Dr. Suribabu Donupudi</option>
+            <option value="Dr. Usha K Hasyagar" {% if form.csir_guide_name.value == "Dr. Usha K Hasyagar" %}selected{% endif %}>Dr. Usha K Hasyagar</option>
+            <option value="Dr. V Senthilkumar" {% if form.csir_guide_name.value == "Dr. V Senthilkumar" %}selected{% endif %}>Dr. V Senthilkumar</option>
+            <option value="Dr. Vivekananda Hazra" {% if form.csir_guide_name.value == "Dr. Vivekananda Hazra" %}selected{% endif %}>Dr. Vivekananda Hazra</option>
+            <option value="Gugulothu Srilatha" {% if form.csir_guide_name.value == "Gugulothu Srilatha" %}selected{% endif %}>Gugulothu Srilatha</option>
+            <option value="Gutta Jahnavi" {% if form.csir_guide_name.value == "Gutta Jahnavi" %}selected{% endif %}>Gutta Jahnavi</option>
+            <option value="Manish Kumar" {% if form.csir_guide_name.value == "Manish Kumar" %}selected{% endif %}>Manish Kumar</option>
+            <option value="Md Talib Hasan Ansari" {% if form.csir_guide_name.value == "Md Talib Hasan Ansari" %}selected{% endif %}>Md Talib Hasan Ansari</option>
+            <option value="Mithun Babu N" {% if form.csir_guide_name.value == "Mithun Babu N" %}selected{% endif %}>Mithun Babu N</option>
+            <option value="Pankaj Saini" {% if form.csir_guide_name.value == "Pankaj Saini" %}selected{% endif %}>Pankaj Saini</option>
+            <option value="Pavithra N.R." {% if form.csir_guide_name.value == "Pavithra N.R." %}selected{% endif %}>Pavithra N.R.</option>
+            <option value="Rakesh Asery" {% if form.csir_guide_name.value == "Rakesh Asery" %}selected{% endif %}>Rakesh Asery</option>
+            <option value="Sanjeev Ekka" {% if form.csir_guide_name.value == "Sanjeev Ekka" %}selected{% endif %}>Sanjeev Ekka</option>
+            <option value="Swapnil Burungale" {% if form.csir_guide_name.value == "Swapnil Burungale" %}selected{% endif %}>Swapnil Burungale</option>
+            <option value="Zuber Khan" {% if form.csir_guide_name.value == "Zuber Khan" %}selected{% endif %}>Zuber Khan</option>
+          </select>
+          {% if form.csir_guide_name.errors %}<div class="invalid-feedback d-block">{{ form.csir_guide_name.errors.0 }}</div>{% endif %}
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+  <div class="section-card mb-4">
+    <div class="section-title"><i class="bi bi-paperclip me-2"></i>Other Information &amp; Documents</div>
+    <div class="section-body">
+      <div class="row g-3">
+
+        <div class="col-12">
+          <label class="form-label fw-semibold">Any Other Relevant Information</label>
+          <textarea name="other_info" rows="3"
+            class="form-control {% if form.other_info.errors %}is-invalid{% endif %}">{{ form.other_info.value|default:'' }}</textarea>
+        </div>
+
+        <div class="col-12">
+          <label class="form-label fw-semibold">Upload Resume / CV (PDF only, max 2 MB)</label>
+          {{ form.resume }}
+          {% if form.resume.errors %}
+            <div class="text-danger small mt-1">{{ form.resume.errors.0 }}</div>
+          {% else %}
+            <div class="form-text">Only .pdf files accepted. Maximum size: 2 MB.</div>
+          {% endif %}
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+  <div class="section-card mb-4" style="border-color:#ffc107;">
+    <div class="section-title" style="background:#856404;">
+      <i class="bi bi-shield-check-fill me-2"></i>Declaration
+    </div>
+    <div class="section-body">
+      <p class="text-muted small mb-2">
+        <strong>* Please check your entries carefully before submitting. Corrections are not permitted after submission.</strong><br>
+        * Multiple submissions or bogus entries will result in disqualification.
+      </p>
+      <div class="form-check {% if form.declaration.errors %}is-invalid{% endif %}">
+        <input class="form-check-input {% if form.declaration.errors %}is-invalid{% endif %}"
+               type="checkbox" name="declaration" id="id_declaration"
+               {% if form.declaration.value %}checked{% endif %}>
+        <label class="form-check-label small" for="id_declaration">
+          {{ form.declaration.label }}
+        </label>
+      </div>
+      {% if form.declaration.errors %}
+        <div class="text-danger small mt-1">{{ form.declaration.errors.0 }}</div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-end gap-2 mb-5">
+    <button type="reset" class="btn btn-outline-secondary px-4">
+      <i class="bi bi-arrow-counterclockwise me-1"></i>Reset
+    </button>
+    <button type="submit" class="btn btn-warning px-5 fw-semibold">
+      <i class="bi bi-send-fill me-2"></i>Submit Application
+    </button>
+  </div>
+
+</form>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// ── UX Improvement & Future Date Restriction ─────────────────────────
+document.addEventListener('DOMContentLoaded', function () {
+  // 1. Scroll to first error on page load
+  const firstErr = document.querySelector('.is-invalid, .invalid-feedback.d-block');
+  if (firstErr) {
+    firstErr.closest('.section-card')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  // 2. Restrict Project Dates to Future Only
+  const fromInp = document.getElementById('id_internship_from');
+  const toInp   = document.getElementById('id_internship_to');
+  
+  if (fromInp && toInp) {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    const minDate = `${yyyy}-${mm}-${dd}`;
+
+    fromInp.min = minDate;
+    toInp.min = minDate;
+    
+    // Ensure 'To' cannot be before the selected 'From' date
+    fromInp.addEventListener('change', function() {
+      toInp.min = this.value ? this.value : minDate;
+    });
+  }
+});
+
+// ── Live validation helper functions ─────────────────────────────────
+function setValid(el)   { el.classList.remove('is-invalid'); el.classList.add('is-valid'); }
+function setInvalid(el) { el.classList.add('is-invalid');    el.classList.remove('is-valid'); }
+function clearState(el) { el.classList.remove('is-invalid', 'is-valid'); }
+
+// ── Mobile No Validation ─────────────────────────────────────────────
+document.getElementById('id_mobile')?.addEventListener('blur', function () {
+  const v = this.value.trim();
+  if (!v) { clearState(this); return; }
+  /^\d{10}$/.test(v) ? setValid(this) : setInvalid(this);
+});
+document.getElementById('id_mobile')?.addEventListener('input', function () {
+  this.value = this.value.replace(/\D/g, '').slice(0, 10);
+});
+
+// ── Pincode Validation ───────────────────────────────────────────────
+document.getElementById('id_pincode')?.addEventListener('blur', function () {
+  const v = this.value.trim();
+  if (!v) { clearState(this); return; }
+  /^\d{6}$/.test(v) ? setValid(this) : setInvalid(this);
+});
+document.getElementById('id_pincode')?.addEventListener('input', function () {
+  this.value = this.value.replace(/\D/g, '').slice(0, 6);
+});
+
+// ── Email Validation ─────────────────────────────────────────────────
+function validateEmail(val) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val); }
+['id_email', 'id_guide_email'].forEach(function (id) {
+  document.getElementById(id)?.addEventListener('blur', function () {
+    const v = this.value.trim();
+    if (!v) { clearState(this); return; }
+    validateEmail(v) ? setValid(this) : setInvalid(this);
+  });
+});
+
+// ── Percentage field Validation (0 to 100 limit) ─────────────────────
+['id_tenth', 'id_twelfth'].forEach(function (id) {
+  document.getElementById(id)?.addEventListener('blur', function () {
+    const v = parseFloat(this.value);
+    if (this.value === '') { clearState(this); return; }
+    (v >= 0 && v <= 100) ? setValid(this) : setInvalid(this);
+  });
+});
+
+// ── Dynamic CGPA / Marks toggle logic ────────────────────────────────
+function applyScoreType(selId, inpId, lblId, hintId) {
+  const sel  = document.getElementById(selId);
+  const inp  = document.getElementById(inpId);
+  const lbl  = document.getElementById(lblId);
+  const hint = document.getElementById(hintId);
+  if (!sel || !inp) return;
+
+  function update() {
+    const isCgpa = sel.value === 'cgpa';
+    inp.max  = isCgpa ? '10' : '100'; // Change HTML max attribute
+    inp.step = '0.01';
+    
+    if (lbl)  lbl.innerHTML = isCgpa ? 'Aggregate <span class="text-danger">*</span>'
+                                      : 'Aggregate (%) <span class="text-danger">*</span>';
+    if (hint) hint.textContent = isCgpa ? '0.00 – 10.00' : '0.00 – 100.00';
+    
+    if (inp.value && parseFloat(inp.value) > parseFloat(inp.max)) inp.value = '';
+  }
+  
+  sel.addEventListener('change', update);
+  update(); // Run once on load
+
+  inp.addEventListener('blur', function () {
+    const v = parseFloat(this.value);
+    if (this.value === '') { clearState(this); return; }
+    (v >= 0 && v <= parseFloat(this.max)) ? setValid(this) : setInvalid(this);
+  });
+}
+
+applyScoreType('id_score_type',      'id_cgpa',      'cgpa_label',      'cgpa_hint');
+applyScoreType('id_prev_score_type', 'id_prev_cgpa', 'prev_cgpa_label', 'prev_cgpa_hint');
+
+// ── Course "Others" text box reveal ──────────────────────────────────
+const courseSelect = document.getElementById('id_course_name');
+const courseOther  = document.getElementById('course_other_wrap');
+if (courseSelect) {
+  function togCourse() { courseOther.style.display = courseSelect.value === 'Others' ? '' : 'none'; }
+  courseSelect.addEventListener('change', togCourse); togCourse();
+}
+
+// ── Area "Others" text box reveal ────────────────────────────────────
+const areaSelect = document.getElementById('id_area_of_interest');
+const areaOther  = document.getElementById('area_other_wrap');
+if (areaSelect) {
+  function togArea() { areaOther.style.display = areaSelect.value === 'Others' ? '' : 'none'; }
+  areaSelect.addEventListener('change', togArea); togArea();
+}
+
+// ── Scheme Dates and Auto-Duration Calculator ────────────────────────
+const schemeSelect  = document.getElementById('id_scheme');
+const wrapFrom      = document.getElementById('wrap_from');
+const wrapTo        = document.getElementById('wrap_to');
+const wrapDuration  = document.getElementById('wrap_duration');
+const lblFrom       = document.getElementById('lbl_from');
+const lblTo         = document.getElementById('lbl_to');
+
+if (schemeSelect) {
+  function togScheme() {
+    const show = !!schemeSelect.value;
+    [wrapFrom, wrapTo, wrapDuration].forEach(el => { if (el) el.style.display = show ? '' : 'none'; });
+    const isIntern = schemeSelect.value === 'Internship';
+    if (lblFrom) lblFrom.innerHTML = (isIntern ? 'Internship From' : 'Project From') + ' <span class="text-danger">*</span>';
+    if (lblTo)   lblTo.innerHTML   = (isIntern ? 'Internship To'   : 'Project To')   + ' <span class="text-danger">*</span>';
+  }
+  schemeSelect.addEventListener('change', togScheme); togScheme();
+}
+
+const fromInp = document.getElementById('id_internship_from');
+const toInp   = document.getElementById('id_internship_to');
+const durInp  = document.getElementById('id_duration_months');
+
+// ── Degree-based Duration Range Logic ────────────────────────────────
+const highestDegreeSelect = document.querySelector('select[name="highest_degree"]');
+const courseNameSelect    = document.getElementById('id_course_name');
+const durHint             = document.getElementById('duration_hint');
+const degreeNote          = document.getElementById('degree_duration_note');
+
+function getMaxDurationFromDegree() {
+  const phd_values = ['PhD'];
+  const deg = (highestDegreeSelect?.value || '').toLowerCase().trim();
+  const crs = (courseNameSelect?.value || '').toLowerCase().trim();
+  if (deg === 'phd' || crs === 'phd') return 12;
+  return 6;
+}
+
+function updateDurationRange() {
+  const durInp = document.getElementById('id_duration_months');
+  if (!durInp) return;
+  const maxMonths = getMaxDurationFromDegree();
+  durInp.min = 2;
+  durInp.max = maxMonths;
+  if (durHint) durHint.textContent = `2–${maxMonths} months`;
+  if (degreeNote) {
+    if (maxMonths === 12) {
+      degreeNote.textContent = 'For PhD: project duration is 2–12 months.';
+      degreeNote.style.display = 'inline';
+    } else {
+      degreeNote.textContent = 'For your degree level: project duration is 2–6 months.';
+      degreeNote.style.display = 'inline';
+    }
+  }
+  if (durInp.value && parseInt(durInp.value) > maxMonths) durInp.value = maxMonths;
+}
+
+highestDegreeSelect?.addEventListener('change', updateDurationRange);
+courseNameSelect?.addEventListener('change', updateDurationRange);
+updateDurationRange(); // Run on load
+
+function calcDuration() {
+  if (!fromInp?.value || !toInp?.value || !durInp) return;
+  const from = new Date(fromInp.value), to = new Date(toInp.value);
+  if (to <= from) { durInp.value = ''; return; }
+
+  const months = (to.getFullYear() - from.getFullYear()) * 12 + (to.getMonth() - from.getMonth());
+  const maxM = getMaxDurationFromDegree();
+  const clamped = Math.min(Math.max(2, Math.round(months)), maxM);
+  durInp.value = clamped || '';
+}
+
+fromInp?.addEventListener('change', calcDuration);
+toInp?.addEventListener('change', calcDuration);
+
+// ── File Upload Client-side Validation ───────────────────────────────
+document.querySelector('input[name="resume"]')?.addEventListener('change', function () {
+  const file = this.files[0];
+  if (!file) return;
+  
+  const errDiv = this.nextElementSibling;
+  
+  if (!file.name.toLowerCase().endsWith('.pdf')) {
+    setInvalid(this);
+    if (errDiv) errDiv.textContent = 'Only PDF files are allowed.';
+    this.value = ''; // Clears the input
+    return;
+  }
+  
+  if (file.size > 2 * 1024 * 1024) {
+    setInvalid(this);
+    if (errDiv) errDiv.textContent = 'File must be under 2 MB.';
+    this.value = ''; // Clears the input
+    return;
+  }
+  
+  setValid(this);
+  if (errDiv) errDiv.textContent = '✓ ' + file.name;
+});
+</script>
+{% endblock %}

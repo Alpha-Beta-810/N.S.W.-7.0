@@ -1,0 +1,270 @@
+{% extends "portal/base_portal.html" %}
+{% block title %}Application #{{ app.id }} — SPARK Portal{% endblock %}
+{% block page_title %}Application #{{ app.id }} — {{ app.title }} {{ app.full_name }}{% endblock %}
+
+{% block content %}
+
+<!-- ── Header bar ── -->
+<div class="d-flex flex-wrap align-items-center gap-2 mb-4">
+  <a href="/portal/dashboard/" class="btn btn-sm btn-outline-secondary">
+    <i class="bi bi-arrow-left me-1"></i>Back
+  </a>
+
+  <!-- Status badge -->
+  <span class="badge fs-6 px-3 py-2
+    {% if app.status == 'Pending' %}badge-pending
+    {% elif app.status == 'Accepted' %}badge-accepted
+    {% else %}badge-rejected{% endif %}">
+    {{ app.status }}
+  </span>
+
+  <div class="ms-auto d-flex gap-2 flex-wrap">
+    <!-- Accept button -->
+    <button class="btn btn-success btn-sm fw-semibold px-3"
+            data-bs-toggle="modal" data-bs-target="#actionModal"
+            data-status="Accepted" data-color="success">
+      <i class="bi bi-check-lg me-1"></i>Accept
+    </button>
+    <!-- Reject button -->
+    <button class="btn btn-danger btn-sm fw-semibold px-3"
+            data-bs-toggle="modal" data-bs-target="#actionModal"
+            data-status="Rejected" data-color="danger">
+      <i class="bi bi-x-lg me-1"></i>Reject
+    </button>
+    <!-- Reset to pending -->
+    {% if app.status != 'Pending' %}
+    <button class="btn btn-outline-warning btn-sm"
+            data-bs-toggle="modal" data-bs-target="#actionModal"
+            data-status="Pending" data-color="warning">
+      <i class="bi bi-arrow-counterclockwise me-1"></i>Reset Pending
+    </button>
+    {% endif %}
+    <!-- Download PDF -->
+    <a href="/portal/application/{{ app.id }}/export-pdf/" class="btn btn-outline-danger btn-sm">
+      <i class="bi bi-file-earmark-pdf me-1"></i>PDF
+    </a>
+    <!-- Delete (SuperAdmin only) -->
+    {% if user.is_superuser %}
+    <button class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal">
+      <i class="bi bi-trash me-1"></i>Delete
+    </button>
+    {% endif %}
+  </div>
+</div>
+
+{% if app.admin_notes %}
+<div class="alert alert-secondary py-2 mb-3">
+  <strong><i class="bi bi-sticky me-2"></i>Admin Notes:</strong> {{ app.admin_notes }}
+  {% if app.reviewed_by %}
+  <span class="text-muted small ms-2">— {{ app.reviewed_by.get_full_name|default:app.reviewed_by.username }}
+  {% if app.reviewed_at %}on {{ app.reviewed_at|date:"d M Y, H:i" }}{% endif %}</span>
+  {% endif %}
+</div>
+{% endif %}
+
+<!-- ── Detail sections ── -->
+<div class="row g-4">
+
+  <!-- LEFT COLUMN -->
+  <div class="col-lg-6">
+
+    <div class="bg-white rounded shadow-sm mb-4">
+      <div class="px-3 py-2 border-bottom fw-bold small" style="background:#003366;color:#fff;border-radius:8px 8px 0 0;">
+        <i class="bi bi-person-fill me-2"></i>Personal Details
+      </div>
+      <table class="table table-sm table-borderless mb-0 small">
+        {% include "portal/_detail_row.html" with label="Name"        value=app.full_name prefix=app.title %}
+        {% include "portal/_detail_row.html" with label="Date of Birth" value=app.dob %}
+        {% include "portal/_detail_row.html" with label="Gender"      value=app.gender %}
+        {% include "portal/_detail_row.html" with label="Nationality" value=app.nationality %}
+        {% include "portal/_detail_row.html" with label="Email"       value=app.email link="mailto:" %}
+        {% include "portal/_detail_row.html" with label="Mobile"      value=app.mobile %}
+        {% include "portal/_detail_row.html" with label="Phone"       value=app.phone %}
+        {% include "portal/_detail_row.html" with label="Address"     value=app.address %}
+        {% include "portal/_detail_row.html" with label="City / State / Pin" value=app.city suffix=app.state suffix2=app.pincode %}
+      </table>
+    </div>
+
+    <div class="bg-white rounded shadow-sm mb-4">
+      <div class="px-3 py-2 border-bottom fw-bold small" style="background:#003366;color:#fff;border-radius:8px 8px 0 0;">
+        <i class="bi bi-mortarboard-fill me-2"></i>Current Course Details
+      </div>
+      <table class="table table-sm table-borderless mb-0 small">
+        {% include "portal/_detail_row.html" with label="Institute"          value=app.institute_name %}
+        {% include "portal/_detail_row.html" with label="Institute Category" value=app.institute_category %}
+        {% include "portal/_detail_row.html" with label="Department"         value=app.department %}
+        {% include "portal/_detail_row.html" with label="Specialization"     value=app.specialization %}
+        {% include "portal/_detail_row.html" with label="Course"             value=app.course_name %}
+        {% include "portal/_detail_row.html" with label="Duration"           value=app.course_duration suffix="year(s)" %}
+        {% include "portal/_detail_row.html" with label="CGPA / Marks"       value=app.cgpa %}
+      </table>
+    </div>
+
+    <div class="bg-white rounded shadow-sm mb-4">
+      <div class="px-3 py-2 border-bottom fw-bold small" style="background:#003366;color:#fff;border-radius:8px 8px 0 0;">
+        <i class="bi bi-book-fill me-2"></i>Previous Academic
+      </div>
+      <table class="table table-sm table-borderless mb-0 small">
+        {% include "portal/_detail_row.html" with label="10th %"         value=app.tenth_percentage %}
+        {% include "portal/_detail_row.html" with label="12th %"         value=app.twelfth_percentage %}
+        {% include "portal/_detail_row.html" with label="Highest Degree" value=app.highest_degree %}
+        {% include "portal/_detail_row.html" with label="Prev Institute" value=app.prev_institute %}
+        {% include "portal/_detail_row.html" with label="Prev Dept"      value=app.prev_department %}
+        {% include "portal/_detail_row.html" with label="Prev CGPA"      value=app.prev_cgpa %}
+      </table>
+    </div>
+
+  </div>
+
+  <!-- RIGHT COLUMN -->
+  <div class="col-lg-6">
+
+    <div class="bg-white rounded shadow-sm mb-4">
+      <div class="px-3 py-2 border-bottom fw-bold small" style="background:#003366;color:#fff;border-radius:8px 8px 0 0;">
+        <i class="bi bi-clipboard2-data-fill me-2"></i>Project / Internship
+      </div>
+      <table class="table table-sm table-borderless mb-0 small">
+        {% include "portal/_detail_row.html" with label="Scheme"          value=app.scheme %}
+        {% include "portal/_detail_row.html" with label="Area of Interest" value=app.area_of_interest %}
+        {% include "portal/_detail_row.html" with label="From"            value=app.internship_from %}
+        {% include "portal/_detail_row.html" with label="To"              value=app.internship_to %}
+        {% include "portal/_detail_row.html" with label="Duration"        value=app.duration_months suffix="months" %}
+      </table>
+      {% if app.statement %}
+      <div class="px-3 py-2 border-top small">
+        <div class="text-muted fw-semibold mb-1">Statement of Purpose</div>
+        <div style="white-space:pre-wrap;">{{ app.statement }}</div>
+      </div>
+      {% endif %}
+      {% if app.experience %}
+      <div class="px-3 py-2 border-top small">
+        <div class="text-muted fw-semibold mb-1">Relevant Experience</div>
+        <div>{{ app.experience }}</div>
+      </div>
+      {% endif %}
+    </div>
+
+    <div class="bg-white rounded shadow-sm mb-4">
+      <div class="px-3 py-2 border-bottom fw-bold small" style="background:#003366;color:#fff;border-radius:8px 8px 0 0;">
+        <i class="bi bi-person-badge-fill me-2"></i>Guide / HOD Details
+      </div>
+      <table class="table table-sm table-borderless mb-0 small">
+        {% include "portal/_detail_row.html" with label="Name"        value=app.guide_name %}
+        {% include "portal/_detail_row.html" with label="Designation" value=app.guide_designation %}
+        {% include "portal/_detail_row.html" with label="Department"  value=app.guide_department %}
+        {% include "portal/_detail_row.html" with label="Email"       value=app.guide_email link="mailto:" %}
+        {% include "portal/_detail_row.html" with label="Phone"       value=app.guide_phone %}
+        {% include "portal/_detail_row.html" with label="CSIR Guide"  value=app.csir_guide_name %}
+      </table>
+    </div>
+
+    <div class="bg-white rounded shadow-sm mb-4">
+      <div class="px-3 py-2 border-bottom fw-bold small" style="background:#003366;color:#fff;border-radius:8px 8px 0 0;">
+        <i class="bi bi-paperclip me-2"></i>Documents &amp; Other
+      </div>
+      <table class="table table-sm table-borderless mb-0 small">
+        <tr>
+          <td class="text-muted fw-semibold" style="width:40%">Resume</td>
+          <td>
+            {% if app.resume %}
+              <a href="{{ app.resume.url }}" target="_blank" class="btn btn-sm btn-outline-danger py-0 px-2">
+                <i class="bi bi-file-earmark-pdf me-1"></i>View PDF
+              </a>
+            {% else %}—{% endif %}
+          </td>
+        </tr>
+        {% include "portal/_detail_row.html" with label="Applied On"  value=app.created_at %}
+        {% include "portal/_detail_row.html" with label="Other Info"  value=app.other_info %}
+      </table>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ══ ACTION MODAL ════════════════════════════════════════════ -->
+<div class="modal fade" id="actionModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header" id="actionModalHeader">
+        <h5 class="modal-title" id="actionModalTitle">Review Application</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <form method="POST" action="/portal/application/{{ app.id }}/action/">
+        {% csrf_token %}
+        <input type="hidden" name="status" id="actionStatus">
+        <input type="hidden" name="next" value="/portal/dashboard/">
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Internal Notes <small class="text-muted">(optional)</small></label>
+            <textarea name="admin_notes" class="form-control" rows="4"
+                      placeholder="Add notes visible only to admins…">{{ app.admin_notes|default:'' }}</textarea>
+          </div>
+          <div class="alert py-2 small" id="actionAlert"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn fw-semibold px-4" id="actionConfirmBtn">Confirm</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══ DELETE MODAL (SuperAdmin only) ══════════════════════════ -->
+{% if user.is_superuser %}
+<div class="modal fade" id="deleteModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-danger">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title"><i class="bi bi-exclamation-triangle-fill me-2"></i>Delete Application</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p>Permanently delete application <strong>#{{ app.id }} — {{ app.title }} {{ app.full_name }}</strong>?</p>
+        <p class="text-danger small mb-0"><strong>This cannot be undone.</strong></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+        <form method="POST" action="/portal/application/{{ app.id }}/delete/" class="d-inline">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger fw-semibold">Yes, Delete</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.querySelectorAll('[data-bs-target="#actionModal"]').forEach(btn => {
+  btn.addEventListener('click', function () {
+    const status = this.dataset.status;
+    const color  = this.dataset.color;
+
+    document.getElementById('actionStatus').value      = status;
+    document.getElementById('actionModalTitle').textContent = `Mark as ${status}`;
+
+    const header = document.getElementById('actionModalHeader');
+    header.className = `modal-header bg-${color} text-white`;
+
+    const alertEl = document.getElementById('actionAlert');
+    const msgs = {
+      Accepted: '✅ The applicant will be marked as Accepted. You can add internal notes below.',
+      Rejected: '❌ The applicant will be marked as Rejected. You can add a reason below.',
+      Pending:  '↩️ The application will be reset to Pending status.',
+    };
+    alertEl.className = `alert alert-${color} py-2 small`;
+    alertEl.textContent = msgs[status] || '';
+
+    const confirmBtn = document.getElementById('actionConfirmBtn');
+    confirmBtn.className = `btn btn-${color} fw-semibold px-4`;
+    confirmBtn.textContent = `Confirm — ${status}`;
+  });
+});
+</script>
+{% endblock %}

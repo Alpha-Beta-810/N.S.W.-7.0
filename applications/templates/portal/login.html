@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SPARK Admin Portal – Sign In</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    body { background: #003366; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+    .login-card { background: #fff; border-radius: 12px; padding: 40px 36px; width: 380px; box-shadow: 0 8px 40px rgba(0,0,0,.35); }
+    .spark-logo  { font-size: 2.2rem; font-weight: 900; color: #003366; }
+    .spark-logo span { color: #ffc107; }
+    .portal-badge { font-size: .65rem; background: #003366; color: #fff; padding: 2px 9px; border-radius: 10px; font-weight: 700; letter-spacing: .06em; }
+  </style>
+</head>
+<body>
+  <div class="login-card">
+    <div class="text-center mb-4">
+      <div class="spark-logo"><span>⚡</span> SPARK</div>
+      <div class="text-muted small mt-1">CSIR-4PI Research Portal</div>
+      <span class="portal-badge mt-2 d-inline-block">ADMIN PORTAL</span>
+    </div>
+
+    {% if error %}
+    <div class="alert alert-danger py-2 small mb-3">
+      <i class="bi bi-exclamation-circle me-1"></i>{{ error }}
+    </div>
+    {% endif %}
+
+    <form method="POST">
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{{ next }}">
+      <div class="mb-3">
+        <label class="form-label fw-semibold">Username</label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="bi bi-person"></i></span>
+          <input type="text" name="username" class="form-control" autofocus autocomplete="username" placeholder="Enter username">
+        </div>
+      </div>
+      <div class="mb-4">
+        <label class="form-label fw-semibold">Password</label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="bi bi-lock"></i></span>
+          <input type="password" id="pwField" name="password" class="form-control" autocomplete="current-password" placeholder="Enter password">
+          <button type="button" class="btn btn-outline-secondary" onclick="togglePw()"><i class="bi bi-eye" id="pwEye"></i></button>
+        </div>
+      </div>
+      <button type="submit" class="btn w-100 fw-bold" style="background:#003366;color:#fff;">
+        <i class="bi bi-box-arrow-in-right me-2"></i>Sign In to Portal
+      </button>
+    </form>
+    <div class="text-center mt-3">
+      <a href="/" class="text-muted small text-decoration-none"><i class="bi bi-arrow-left me-1"></i>Back to main site</a>
+    </div>
+  </div>
+  <script>
+    function togglePw() {
+      const f = document.getElementById('pwField');
+      const e = document.getElementById('pwEye');
+      f.type = f.type === 'password' ? 'text' : 'password';
+      e.className = f.type === 'password' ? 'bi bi-eye' : 'bi bi-eye-slash';
+    }
+  </script>
+</body>
+</html>

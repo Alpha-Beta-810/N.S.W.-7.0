@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h3 style="color:#003366;font-weight:700;">Guidelines</h3>
+<hr>
+
+<h5 class="fw-bold mt-3">(A) Project / Thesis</h5>
+<p>Students are highly encouraged to interact with CSIR-4PI Scientists and identify a guide and area of work prior to the formal submission of their application to SPARK. Research interests and e-mail addresses of CSIR-4PI scientists are given at <a href="http://www.csir4pi.in" target="_blank">www.csir4pi.in</a>.</p>
+<p>It is <strong>mandatory</strong> that students must have a faculty member of their University/Institute as a guide/co-guide. The name, designation, e-mail address and telephone number of the guide from their Institute must be provided while submitting the online application.</p>
+<p>Please ensure that your application is submitted at least <strong>four weeks</strong> prior to the commencement of your Project/Thesis work. We will not be able to process late applications.</p>
+<p>Online applications will be scrutinized by an expert committee at regular intervals. Students may be called for a discussion with the expert committee prior to their selection on a need basis. Selected students will be intimated through e-mail.</p>
+
+<p>Selected students are requested to report to CSIR-4PI office on the project starting date (or the previous day) with the following documents:</p>
+<ol>
+    <li>Originals of all mark cards and certificates starting from 10th onwards</li>
+    <li>One xerox copy of all the originals</li>
+    <li>Two copies of passport size photographs</li>
+    <li>A certificate in the prescribed format (<a href="/forms/">available for download</a>) signed by the candidate, the internal guide from the University/Institute and the head of the department</li>
+</ol>
+<p>Students reporting without the above documents will not be allowed to join CSIR-4PI.</p>
+<p>Upon completion of the project, students will have to prepare a thesis for submission to their University/Institute and CSIR-4PI.</p>
+
+<div class="alert alert-warning py-2">
+    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+    Currently, CSIR-4PI is <strong>not</strong> in a position to offer any stipend or provide accommodation to students.
+</div>
+
+<h5 class="fw-bold mt-4">(B) Internship</h5>
+<p>Maximum duration of Internship is <strong>3 Months</strong>. Those students who need a signed Project/Thesis report should apply under "Project/Thesis" category.</p>
+<p>The student may identify a CSIR-4PI scientist, who is willing to guide him/her during the internship. Please write to the Scientist and obtain e-mail consent from him. Also, discuss and agree upon the start date and duration with the guide.</p>
+<p>Once the guide's consent is obtained, the student may submit his/her internship application at <a href="/apply/">this portal</a>. Please ensure that your application is submitted at least <strong>four weeks</strong> prior to the commencement of your internship.</p>
+
+<p>Selected students are requested to report to CSIR-4PI office on the internship starting date with the following documents:</p>
+<ol>
+    <li>Originals of all mark cards and certificates starting from 10th onwards</li>
+    <li>One xerox copy of all the originals</li>
+    <li>Two copies of passport size photographs</li>
+    <li>A certificate in the prescribed format (<a href="/forms/">available for download</a>) signed by the candidate and the head of the department</li>
+</ol>
+
+<div class="alert alert-warning py-2">
+    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+    Currently, CSIR-4PI is <strong>not</strong> in a position to offer any stipend or provide accommodation to summer internship candidates.
+</div>
+
+<div class="section-card mt-3">
+    <div class="section-title">Nearby Accommodation Areas</div>
+    <div class="section-body">
+        <p class="mb-2 text-muted small">Affordable paying guest accommodations near CSIR-4PI:</p>
+        <div class="d-flex flex-wrap gap-2">
+            {% for area in accommodation %}
+            <span class="badge bg-light text-dark border px-2 py-1">{{ area }}</span>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

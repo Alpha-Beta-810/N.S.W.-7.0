@@ -1,0 +1,108 @@
+{% extends "portal/base_portal.html" %}
+{% block title %}Manage Reviewers — SPARK Portal{% endblock %}
+{% block page_title %}Manage Reviewer Accounts{% endblock %}
+
+{% block content %}
+
+<div class="row g-4">
+
+  <!-- Create new reviewer -->
+  <div class="col-lg-5">
+    <div class="bg-white rounded shadow-sm">
+      <div class="px-3 py-2 border-bottom fw-bold small" style="background:#003366;color:#fff;border-radius:8px 8px 0 0;">
+        <i class="bi bi-person-plus-fill me-2"></i>Create Reviewer Account
+      </div>
+      <div class="p-3">
+        <form method="POST" action="/portal/users/create/">
+          {% csrf_token %}
+          <div class="row g-2">
+            <div class="col-6">
+              <label class="form-label fw-semibold small">First Name</label>
+              <input type="text" name="first_name" class="form-control form-control-sm">
+            </div>
+            <div class="col-6">
+              <label class="form-label fw-semibold small">Last Name</label>
+              <input type="text" name="last_name" class="form-control form-control-sm">
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold small">Email</label>
+              <input type="email" name="email" class="form-control form-control-sm">
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold small">Username <span class="text-danger">*</span></label>
+              <input type="text" name="username" class="form-control form-control-sm" required>
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold small">Password <span class="text-danger">*</span></label>
+              <input type="password" name="password" class="form-control form-control-sm" required autocomplete="new-password">
+            </div>
+          </div>
+          <button type="submit" class="btn btn-sm fw-semibold mt-3 px-4" style="background:#003366;color:#fff;">
+            <i class="bi bi-plus-lg me-1"></i>Create Reviewer
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reviewer list -->
+  <div class="col-lg-7">
+    <div class="bg-white rounded shadow-sm mb-4">
+      <div class="px-3 py-2 border-bottom fw-bold small" style="background:#003366;color:#fff;border-radius:8px 8px 0 0;">
+        <i class="bi bi-people-fill me-2"></i>Reviewers
+        <span class="badge bg-warning text-dark ms-2">{{ reviewers|length }}</span>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-sm table-hover mb-0 small">
+          <thead class="table-light">
+            <tr><th>Username</th><th>Full Name</th><th>Email</th><th>Actions</th></tr>
+          </thead>
+          <tbody>
+            {% for reviewer in reviewers %}
+            <tr>
+              <td><strong>{{ reviewer.username }}</strong></td>
+              <td>{{ reviewer.get_full_name|default:"—" }}</td>
+              <td><a href="mailto:{{ reviewer.email }}">{{ reviewer.email|default:"—" }}</a></td>
+              <td>
+                <form method="POST" action="/portal/users/{{ reviewer.id }}/remove/"
+                      onsubmit="return confirm('Remove portal access from {{ reviewer.username }}?')">
+                  {% csrf_token %}
+                  <button class="btn btn-sm btn-outline-danger py-0 px-2">
+                    <i class="bi bi-person-dash me-1"></i>Remove
+                  </button>
+                </form>
+              </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4" class="text-center text-muted py-3">No reviewers yet.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="bg-white rounded shadow-sm">
+      <div class="px-3 py-2 border-bottom fw-bold small" style="background:#495057;color:#fff;border-radius:8px 8px 0 0;">
+        <i class="bi bi-shield-fill me-2"></i>SuperAdmins
+      </div>
+      <div class="table-responsive">
+        <table class="table table-sm mb-0 small">
+          <thead class="table-light">
+            <tr><th>Username</th><th>Full Name</th><th>Email</th></tr>
+          </thead>
+          <tbody>
+            {% for sa in superadmins %}
+            <tr>
+              <td><strong>{{ sa.username }}</strong></td>
+              <td>{{ sa.get_full_name|default:"—" }}</td>
+              <td>{{ sa.email|default:"—" }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
