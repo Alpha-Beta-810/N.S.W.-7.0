@@ -138,5 +138,3 @@ Unauthorized duplication or submission of this work for academic
 or professional credit is strictly prohibited.
 
 ```
-
-```
