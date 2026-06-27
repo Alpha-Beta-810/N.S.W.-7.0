@@ -116,9 +116,11 @@ spark_project/
 │
 └── manage.py
 
+'''
+
 ## 🔒 Managing Roles (RBAC)
 
-'''bash
+```text
 
 To grant a staff member the ability to review applications without giving them full Superuser control:
 
@@ -126,13 +128,13 @@ To grant a staff member the ability to review applications without giving them f
 2. Go to **Groups** and create a group named exactly `Reviewer`.
 3. Go to **Users**, select the staff member, and add them to the `Reviewer` group.
 
-'''
+```
 
 ## 📄 License
 
 Copyright (c) 2026 Devarakonda Saratchandra Mouli. All rights reserved.
 
-'''bash
+```text
 
 This code and its associated documentation are private property. 
 No permission is granted for anyone to copy, modify, merge, publish, 
@@ -141,6 +143,6 @@ distribute, sublicense, or sell copies of this software.
 Unauthorized duplication or submission of this work for academic 
 or professional credit is strictly prohibited.
 
-'''
+```
 
 ```
