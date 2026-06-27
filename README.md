@@ -91,10 +91,10 @@ python manage.py runserver
 Visit `http://127.0.0.1:8000/` in your browser to view the site.
 
 ```
+```
 
 ## 📂 Key Project Structure
 
-```text
 spark_project/
 │
 ├── new_spark_website/          # Core Django Settings
@@ -118,19 +118,15 @@ spark_project/
 │
 └── manage.py
 
-'''
+```
 
 ## 🔒 Managing Roles (RBAC)
-
-```text
 
 To grant a staff member the ability to review applications without giving them full Superuser control:
 
 1. Log in to the default Django admin (`/admin/`).
 2. Go to **Groups** and create a group named exactly `Reviewer`.
 3. Go to **Users**, select the staff member, and add them to the `Reviewer` group.
-
-```
 
 ## 📄 License
 
