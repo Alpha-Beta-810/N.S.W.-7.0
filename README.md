@@ -1,10 +1,9 @@
 # N.S.W-7.0 (New Spark Website 7) : A Prototye Academic Research Application Portal
 
-A comprehensive, Django-based web application prototype designed to manage student applications.
+A comprehensive, Django-based web application prototype designed to manage student applications on an organizational level.
 This portal allows students to apply for internships and project/thesis work under various scientists, while providing administrators with a robust dashboard to track, review, and export applications.
 A robust, Django-based web application engineered to manage, review, and process academic internship and thesis applications.
 Built with a focus on Role-Based Access Control (RBAC), automated document generation, and secure data handling, this platform provides a seamless bridge between applicants and reviewing principal investigators (PIs).
-Intially created for the SPARK (Student Programme for Advancement in Research Knowledge) at the CSIR Fourth Paradigm Institute (CSIR-4PI), Bangalore as part of my project work.
 
 ## 🚀 Features
 
