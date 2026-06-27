@@ -90,7 +90,6 @@ python manage.py runserver
 
 Visit `http://127.0.0.1:8000/` in your browser to view the site.
 
-```
 ## 📂 Key Project Structure
 
 ```text
