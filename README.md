@@ -90,6 +90,8 @@ python manage.py runserver
 
 Visit `http://127.0.0.1:8000/` in your browser to view the site.
 
+```
+
 ## 📂 Key Project Structure
 
 ```text
@@ -142,7 +144,5 @@ distribute, sublicense, or sell copies of this software.
 
 Unauthorized duplication or submission of this work for academic 
 or professional credit is strictly prohibited.
-
-```
 
 ```
